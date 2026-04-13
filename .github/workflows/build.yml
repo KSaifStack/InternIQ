@@ -117,12 +117,13 @@ jobs:
         run: npm run ${{ matrix.electron-script }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS code signing (optional – leave secrets unset to skip)
-          CSC_LINK: ${{ secrets.APPLE_CERT_P12_BASE64 }}
-          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # macOS code signing (optional – set these secrets in your repo to enable notarization, 
+          # but do NOT export them as empty strings in the workflow or electron-builder will crash)
+          # CSC_LINK: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          # CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       # ── 10. Collect artifacts ─────────────────────────────────────────────────
       - name: List release files
