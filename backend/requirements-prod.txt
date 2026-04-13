@@ -1,0 +1,35 @@
+# InternIQ Production Requirements
+# These are carefully pinned to versions with pre-built wheels for Python 3.13.
+# Do NOT use uvicorn[standard] — it pulls in watchfiles (requires Rust/maturin).
+# Install with: pip install --only-binary :all: -r requirements-prod.txt
+
+# Web framework
+fastapi==0.115.6
+
+# ASGI server (base only — no [standard] extra to avoid watchfiles/Rust deps)
+uvicorn==0.34.0
+
+# Database ORM
+sqlalchemy==2.0.36
+
+# Data validation
+pydantic==2.10.3
+pydantic-settings==2.7.0
+
+# Configuration
+python-dotenv>=1.0.0
+
+# Scheduling
+apscheduler>=3.10.0
+
+# HTTP client (pure Python — no Rust wheels needed)
+httpx==0.28.1
+httpcore>=1.0.7
+h11>=0.14.0
+
+# Standard HTTP requests
+requests==2.32.3
+
+# HTML parsing (pure Python, no compilation)
+beautifulsoup4==4.12.3
+soupsieve>=2.5

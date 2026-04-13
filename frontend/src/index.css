@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #f9f7f2;
+  --bg-secondary: #ffffff;
+  --bg-elevated: #f2ede3;
+  --border: #e0d9cc;
+  --border-hover: #c8b98a;
+  --text-primary: #1a1a1a;
+  --text-secondary: #5a5a5a;
+  --text-muted: #9a9080;
+  --accent: #2d7a4f;
+  --accent-hover: #1f5c3a;
+  --accent-subtle: rgba(45, 122, 79, 0.1);
+  --gold: #c9952a;
+  --gold-hover: #a87820;
+  --gold-subtle: rgba(201, 149, 42, 0.12);
+  --success: #2d7a4f;
+  --warning: #c9952a;
+  --danger: #c0392b;
+
+  /* Transitions */
+  --transition: all 0.15s ease;
+  
+  /* Radii */
+  --radius-badge: 6px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+select, option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+@layer base {
+  html, body, #root {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+* { transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease; }
+
+select#state-filter {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+}

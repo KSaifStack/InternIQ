@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>InternIQ – Loading</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        background: #f9f7f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1a1a1a;
+        /* Make window draggable from anywhere */
+        -webkit-app-region: drag;
+      }
+
+      /* Non-draggable interactive elements */
+      button { -webkit-app-region: no-drag; }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid #e0d9cc;
+        border-radius: 20px;
+        padding: 40px 48px;
+        width: 420px;
+        text-align: center;
+        box-shadow: 0 16px 40px rgba(15, 23, 15, 0.10);
+      }
+
+      /* Logo */
+      .logo {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        margin-bottom: 2px;
+      }
+      .logo-dot { color: #c9952a; }
+
+      .tagline {
+        font-size: 11px;
+        font-weight: 500;
+        color: #9a9080;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 28px;
+      }
+
+      /* Double-ring spinner */
+      .spinner-wrap {
+        position: relative;
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 20px;
+      }
+      .spinner {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 3px solid #e0d9cc;
+        border-top-color: #2d7a4f;
+        animation: spin 0.9s linear infinite;
+      }
+      .spinner-inner {
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        background: rgba(45, 122, 79, 0.08);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes spin  { to { transform: rotate(360deg); } }
+      @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+      /* Progress bar */
+      .progress-track {
+        width: 100%;
+        height: 4px;
+        background: #f2ede3;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 14px;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #2d7a4f, #c9952a);
+        transition: width 0.4s ease;
+      }
+
+      /* Status text */
+      .status {
+        font-size: 13px;
+        color: #5a5a5a;
+        min-height: 20px;
+        transition: color 0.3s;
+      }
+      .pulse-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        background: #2d7a4f;
+        border-radius: 50%;
+        margin-right: 7px;
+        vertical-align: middle;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">InternIQ<span class="logo-dot">.</span></div>
+      <div class="tagline">2026 Internship Discovery</div>
+
+      <div class="spinner-wrap">
+        <div class="spinner"></div>
+        <div class="spinner-inner"></div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="status">
+        <span class="pulse-dot"></span>
+        <span id="statusText">Initializing…</span>
+      </div>
+    </div>
+
+    <script>
+      const progressFill = document.getElementById('progressFill');
+      const statusText   = document.getElementById('statusText');
+
+      if (window.loadingAPI) {
+        window.loadingAPI.onStatus((msg) => {
+          statusText.textContent = msg;
+        });
+        window.loadingAPI.onProgress((pct) => {
+          progressFill.style.width = pct + '%';
+        });
+      }
+    </script>
+  </body>
+</html>

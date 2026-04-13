@@ -1,0 +1,230 @@
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+.Python
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+develop-eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+
+# Virtual environments
+venv/
+venv_build/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+virtualenv/
+
+# ===============================
+# Build artifacts (CRITICAL - remove from Git!)
+# ===============================
+# This is the main issue in your repo structure
+build/interniq_backend/
+backend/dist/
+backend/build/
+backend/build_tmp/
+backend/*.egg-info/
+backend/.eggs/
+frontend/dist/
+frontend/build/
+frontend/release/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# PyInstaller
+*.spec
+
+# ===============================
+# Environment & Secrets
+# ===============================
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.key
+*.pem
+*.crt
+*.p12
+secrets/
+credentials/
+
+# ===============================
+# Database & Data files
+# ===============================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+data/
+*.dump
+*.sql
+
+# ===============================
+# Node.js / Frontend
+# ===============================
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+.pnpm-store/
+
+# Build outputs
+frontend/out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+
+# ===============================
+# Electron specific
+# ===============================
+*.zip
+InternIQ-*/
+!electron-builder.yml
+!electron-builder.json
+
+# ===============================
+# IDE and Editor files
+# ===============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-*
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+
+# ===============================
+# Testing & Coverage
+# ===============================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+*.cover
+.nyc_output/
+coverage/
+test-results/
+junit.xml
+
+# ===============================
+# Logs & Runtime
+# ===============================
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+.backend_ready
+.frontend_ready
+.runtime/
+runtime/
+
+# ===============================
+# OS Generated
+# ===============================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db:encryptable
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ===============================
+# Docker
+# ===============================
+*.tar
+*.tar.gz
+.dockerignore
+docker-compose.override.yml
+
+# ===============================
+# Misc
+# ===============================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.swo
+*.swn
+*.lock
+*.cache
+.cache/
+.tmp/
+.temp/
+tmp/
+temp/
+
+# ===============================
+# Application specific
+# ===============================
+# Electron release artifacts
+release/
+out/
+*.blockmap
+
+# Backend runtime files
+backend/__pycache__/
+backend/.pytest_cache/
+backend/instance/
+backend/.webassets-cache
+
+# Frontend runtime
+frontend/.cache/
+frontend/out/
+frontend/.next/
+
+# ===============================
+# Keep these files (anti-patterns)
+# ===============================
+# DON'T ignore these important files:
+!.gitkeep
+!.env.example
+!.env.sample
+!.eslintrc*
+!.prettierrc*
+!.dockerignore
+!README.md
+!LICENSE
