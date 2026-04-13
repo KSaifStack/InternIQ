@@ -62,8 +62,9 @@
     ],
     "extraResources": [
       {
-        "from": "../backend/dist/interniq-backend${ext}",
-        "to": "backend/interniq-backend${ext}"
+        "from": "../backend/dist",
+        "to": "backend",
+        "filter": ["**/*"]
       }
     ],
     "win": {
