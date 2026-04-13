@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.7.0",
   "description": "InternIQ - AI-Powered Intern Management Platform",
-  "author": "KSaifStack",
+  "author": "KSaifStack <ksaifstack@github.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/KSaifStack/InternIQ.git"
