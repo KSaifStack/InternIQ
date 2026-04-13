@@ -1,0 +1,187 @@
+name: Build Installers
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:          # Allow manual trigger from GitHub UI
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build · ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ── Windows ──────────────────────────────────────────────────────────
+          - os: windows-latest
+            name: Windows
+            python-version: '3.11'
+            backend-artifact: interniq-backend.exe
+            electron-script: electron:build:win
+
+          # ── macOS (x64 + arm64 via universal2) ───────────────────────────────
+          - os: macos-14          # Apple Silicon runner (builds universal binaries)
+            name: macOS
+            python-version: '3.11'
+            backend-artifact: interniq-backend
+            electron-script: electron:build:mac
+
+          # ── Linux (AppImage + deb + rpm) ─────────────────────────────────────
+          - os: ubuntu-22.04
+            name: Linux
+            python-version: '3.11'
+            backend-artifact: interniq-backend
+            electron-script: electron:build:linux
+
+    steps:
+      # ── 1. Checkout ─────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Python ───────────────────────────────────────────────────────────
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      # ── 3. Node.js ──────────────────────────────────────────────────────────
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # ── 4. Linux system deps ─────────────────────────────────────────────────
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          # rpmbuild for .rpm target; fakeroot / dpkg for .deb; libarchive-tools for AppImage snap
+          sudo apt-get install -y --no-install-recommends \
+            rpm \
+            fakeroot \
+            dpkg \
+            libarchive-tools \
+            libfuse2      # AppImage runtime dependency
+
+      # ── 5. Python backend dependencies ──────────────────────────────────────
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r backend/requirements.txt
+          pip install pyinstaller
+
+      # ── 6. Build backend with PyInstaller ───────────────────────────────────
+      - name: Build Python backend (PyInstaller)
+        run: >
+          pyinstaller backend/interniq_prod.spec
+          --distpath backend/dist
+          --workpath backend/build_tmp
+          --noconfirm
+          --clean
+
+      # ── 7. Verify backend binary was produced ───────────────────────────────
+      - name: Verify backend binary
+        shell: bash
+        run: |
+          if ls backend/dist/${{ matrix.backend-artifact }}* 1>/dev/null 2>&1; then
+            echo "✅ Backend binary found:"
+            ls -lh backend/dist/${{ matrix.backend-artifact }}* || true
+          else
+            echo "❌ Backend binary NOT found. PyInstaller likely failed."
+            exit 1
+          fi
+
+      # ── 8. Frontend – install deps ───────────────────────────────────────────
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # ── 9. Build Electron installer ──────────────────────────────────────────
+      #    electron:build:* = `vite build && electron-builder --<platform>`
+      #    The backend binary is picked up via extraResources in package.json:
+      #      from: ../backend/dist/interniq-backend${ext}
+      #      to:   backend/interniq-backend${ext}
+      - name: Build Electron installer
+        working-directory: frontend
+        run: npm run ${{ matrix.electron-script }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS code signing (optional – leave secrets unset to skip)
+          CSC_LINK: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      # ── 10. Collect artifacts ─────────────────────────────────────────────────
+      - name: List release files
+        shell: bash
+        run: ls -lh frontend/release/ || echo "(release dir not found)"
+
+      - name: Upload Windows installer (NSIS + portable)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: InternIQ-Windows
+          retention-days: 30
+          path: |
+            frontend/release/*.exe
+
+      - name: Upload macOS DMG
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: InternIQ-macOS
+          retention-days: 30
+          path: |
+            frontend/release/*.dmg
+
+      - name: Upload Linux packages
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: InternIQ-Linux
+          retention-days: 30
+          path: |
+            frontend/release/*.AppImage
+            frontend/release/*.deb
+            frontend/release/*.rpm
+
+  # ── Publish a GitHub Release when a tag is pushed ──────────────────────────
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: false
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: InternIQ ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          generate_release_notes: true
+          files: release-assets/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
