@@ -6,7 +6,7 @@ InternIQ is a desktop application that aggregates 1,700+ active software enginee
 
 ```bash
 # Clone the repo
-git clone https://github.com/KareemSaif/interniq.git
+git clone git clone https://github.com/KSaifStack/InternIQ.git
 cd interniq
 
 # Set up Python backend
